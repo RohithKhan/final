@@ -5,14 +5,16 @@ import './styles.css'
 import Welcome from './pages/Welcome'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Login from './pages/login'
-import StaffLogin from './pages/Dashboard'
+import StaffDashboard from './pages/StaffDashboard'
+import StaffProfile from './pages/StaffProfile'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Staffs from './pages/Staffs'
 import Subjects from './pages/Subjects'
 import SubjectDetails from './pages/SubjectDetails'
 import Profile from './pages/Profile'
-import StaffProfile from './pages/StaffProfile'
+import Outpass from './pages/Outpass'
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -20,12 +22,17 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/staff-login" element={<StaffLogin />} />
+
 
         {/* Protected Routes */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/staff-dashboard" element={
+          <ProtectedRoute>
+            <StaffDashboard />
           </ProtectedRoute>
         } />
         <Route path="/staffs" element={
@@ -51,6 +58,11 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/outpass" element={
+          <ProtectedRoute>
+            <Outpass />
           </ProtectedRoute>
         } />
 

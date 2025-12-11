@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
         setZoomingPath(path);
         setTimeout(() => {
             navigate(path);
-        }, 600); // Wait for animation to finish
+        }, 700); // Wait for animation to finish
     };
 
     return (
@@ -83,6 +83,7 @@ const Dashboard: React.FC = () => {
                                 <span className="stat-value">12 </span>
                                 <span className="stat-label">Downloads</span>
                             </div>
+
                         </div>
                         {/* <div className="stat-card">
                             <div className="stat-icon green">✅</div>
@@ -122,9 +123,15 @@ const Dashboard: React.FC = () => {
                                     <span className="action-icon">👤</span>
                                     <span className="action-text">Edit Profile</span>
                                 </div>
-                                <div className="action-card disabled">
-                                    <span className="action-icon">📅</span>
-                                    <span className="action-text">Timetable</span>
+                                <div
+                                    className={`action-card ${zoomingPath === '/outpass' ? 'zooming' : ''}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleQuickAction('/outpass');
+                                    }}
+                                >
+                                    <span className="action-icon">📝</span>
+                                    <span className="action-text">Outpass</span>
                                 </div>
                             </div>
                         </section>

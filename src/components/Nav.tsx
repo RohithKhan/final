@@ -5,6 +5,7 @@ const Nav: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const userType = localStorage.getItem('userType');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -21,15 +22,18 @@ const Nav: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userType');
         navigate('/login');
     };
 
     const isActive = (path: string) => location.pathname === path;
 
+    const dashboardPath = userType === 'staff' ? '/staff-dashboard' : '/dashboard';
+
     return (
         <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
             <div className="container nav-container">
-                <Link to="/dashboard" className="nav-brand">
+                <Link to={dashboardPath} className="nav-brand">
                     <span className="brand-icon">🎓</span>
                     <span className="brand-text">JIT Portal</span>
                 </Link>
@@ -48,8 +52,8 @@ const Nav: React.FC = () => {
                     {isLoggedIn ? (
                         <>
                             <Link
-                                to="/dashboard"
-                                className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
+                                to={dashboardPath}
+                                className={`nav-link ${isActive(dashboardPath) ? 'active' : ''}`}
                                 onClick={closeMenu}
                             >
                                 Dashboard

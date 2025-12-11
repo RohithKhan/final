@@ -1,853 +1,739 @@
-import React from "react";
+import React, { useState } from 'react';
+import Nav from '../components/Nav';
+import { useNavigate } from 'react-router-dom';
+import { RECENT_DOWNLOADS, type Staff, STAFF_DATA } from '../data/sampleData';
+import { toast } from 'react-toastify';
 
 const StaffDashboard: React.FC = () => {
+    // Staff Dashboard Component
+    // For now mocking the logged in staff as the first one or empty
+    const [staff] = useState<Staff | null>(STAFF_DATA[0]);
+    const navigate = useNavigate();
+    const [zoomingPath, setZoomingPath] = useState<string | null>(null);
+
+    // If we had a real backend auth for staff, we would fetch here.
+    // useEffect(() => {
+    //     const fetchStaffData = async () => {
+    //         // standard fetch logic
+    //     };
+    //     fetchStaffData();
+    // }, []);
+
+    const handleQuickAction = (path: string) => {
+        setZoomingPath(path);
+        setTimeout(() => {
+            navigate(path);
+        }, 600);
+    };
+
+    if (!staff) return <div>Loading...</div>;
+
     return (
-        <>
-            <style>{`
-        :root {
-          --bg-body: #0f172a;
-          --bg-card: #020617;
-          --bg-card-soft: #1397d0;
-          --bg-sidebar: #020617;
-          --accent: #3b82f6;
-          --accent-soft: rgba(59, 130, 246, 0.2);
-          --text-main: #e5e7eb;
-          --text-muted: #9ca3af;
-          --border-subtle: rgba(148, 163, 184, 0.25);
-          --radius-lg: 18px;
-          --radius-pill: 999px;
-          --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
-        }
-
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        body {
-          background: radial-gradient(circle at top, #145cd0 0, #041b81 45%);
-          color: var(--text-main);
-          min-height: 100vh;
-        }
-
-        .dashboard-layout {
-          display: flex;
-          min-height: 100vh;
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 16px;
-          gap: 16px;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-          width: 260px;
-          background: linear-gradient(160deg, #212a34 0%, #121e53 40%, #020617 100%);
-          border-radius: 24px;
-          padding: 20px 18px;
-          border: 1px solid var(--border-subtle);
-          box-shadow: var(--shadow-soft);
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-        }
-
-        .sidebar-header {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .logo-circle {
-          width: 36px;
-          height: 36px;
-          border-radius: 16px;
-          background: radial-gradient(circle at 30% 0, #38bdf8, #3b82f6, #4f46e5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
-          font-weight: 700;
-          color: white;
-          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.9);
-        }
-
-        .brand-text {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.1;
-        }
-
-        .brand-title {
-          font-size: 17px;
-          font-weight: 600;
-          letter-spacing: 0.02em;
-        }
-
-        .brand-subtitle {
-          font-size: 11px;
-          color: var(--text-muted);
-        }
-
-        .sidebar-section-title {
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--text-muted);
-          margin-bottom: 6px;
-        }
-
-        .nav-list {
-          list-style: none;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .nav-item {
-          border-radius: var(--radius-pill);
-          padding: 8px 10px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 13px;
-          color: var(--text-muted);
-          cursor: pointer;
-          border: 1px solid transparent;
-          transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-        }
-
-        .nav-item span.icon {
-          width: 22px;
-          height: 22px;
-          border-radius: 999px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 13px;
-          background: rgba(15, 23, 42, 0.85);
-        }
-
-        .nav-item.active {
-          background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.12), rgba(37, 99, 235, 0.58));
-          border-color: rgba(129, 140, 248, 0.5);
-          color: #f9fafb;
-          transform: translateY(-1px);
-        }
-
-        .nav-item:hover {
-          background: rgba(15, 23, 42, 0.9);
-          border-color: rgba(148, 163, 184, 0.6);
-          color: #e5e7eb;
-        }
-
-        .nav-label-main {
-          font-weight: 500;
-        }
-
-        .nav-label-sub {
-          font-size: 11px;
-          color: var(--text-muted);
-        }
-
-        .nav-text {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .sidebar-footer {
-          margin-top: auto;
-          padding-top: 12px;
-          border-top: 1px dashed rgba(148, 163, 184, 0.35);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 8px;
-        }
-
-        .user-mini {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .user-avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 999px;
-          background: linear-gradient(135deg, #2563eb, #22c55e, #a855f7);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 13px;
-          font-weight: 600;
-          color: white;
-        }
-
-        .user-info {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.1;
-          font-size: 11px;
-        }
-
-        .user-name {
-          font-weight: 500;
-        }
-
-        .user-role {
-          color: var(--text-muted);
-          font-size: 10px;
-        }
-
-        .status-pill {
-          font-size: 11px;
-          padding: 4px 8px;
-          border-radius: var(--radius-pill);
-          background: rgba(34, 197, 94, 0.1);
-          color: #4ade80;
-          border: 1px solid rgba(74, 222, 128, 0.4);
-        }
-
-        /* MAIN AREA */
-        .main {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .topbar {
-          background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), rgba(15, 23, 42, 0.96));
-          border-radius: 24px;
-          padding: 16px 18px;
-          border: 1px solid var(--border-subtle);
-          box-shadow: var(--shadow-soft);
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 12px;
-          justify-content: space-between;
-        }
-
-        .topbar-left {
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-        }
-
-        .page-title {
-          font-size: 18px;
-          font-weight: 600;
-        }
-
-        .page-subtitle {
-          font-size: 12px;
-          color: var(--text-muted);
-        }
-
-        .topbar-right {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .search-box {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(15, 23, 42, 0.86);
-          border-radius: var(--radius-pill);
-          padding: 6px 10px;
-          border: 1px solid rgba(148, 163, 184, 0.4);
-          min-width: 180px;
-        }
-
-        .search-box input {
-          background: transparent;
-          border: none;
-          outline: none;
-          color: var(--text-main);
-          font-size: 12px;
-          width: 100%;
-        }
-
-        .search-icon {
-          font-size: 13px;
-          opacity: 0.8;
-        }
-
-        .icon-btn {
-          width: 30px;
-          height: 30px;
-          border-radius: 999px;
-          border: 1px solid rgba(148, 163, 184, 0.4);
-          background: rgba(15, 23, 42, 0.9);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          cursor: pointer;
-          transition: background 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
-        }
-
-        .icon-btn:hover {
-          background: rgba(30, 64, 175, 0.9);
-          border-color: rgba(129, 140, 248, 0.8);
-          transform: translateY(-1px);
-        }
-
-        .primary-btn {
-          border-radius: var(--radius-pill);
-          padding: 7px 14px;
-          border: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: linear-gradient(135deg, #2563eb, #4f46e5);
-          color: white;
-          font-size: 12px;
-          font-weight: 500;
-          cursor: pointer;
-          box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6);
-          transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease;
-        }
-
-        .primary-btn span.icon {
-          font-size: 14px;
-        }
-
-        .primary-btn:hover {
-          opacity: 0.96;
-          transform: translateY(-1px);
-          box-shadow: 0 16px 36px rgba(37, 99, 235, 0.7);
-        }
-
-        .primary-btn:active {
-          transform: translateY(1px) scale(0.98);
-          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.7);
-        }
-
-        /* CONTENT */
-        .content {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 14px;
-        }
-
-        .stat-card {
-          background: radial-gradient(circle at top, rgba(37, 99, 235, 0.32), rgba(15, 23, 42, 0.98));
-          border-radius: 20px;
-          padding: 14px 14px 13px;
-          border: 1px solid rgba(148, 163, 184, 0.5);
-          box-shadow: var(--shadow-soft);
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .stat-title {
-          font-size: 12px;
-          color: var(--text-muted);
-        }
-
-        .stat-value-row {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          gap: 6px;
-        }
-
-        .stat-value {
-          font-size: 22px;
-          font-weight: 600;
-        }
-
-        .stat-badge {
-          font-size: 11px;
-          padding: 3px 8px;
-          border-radius: var(--radius-pill);
-          background: rgba(22, 163, 74, 0.16);
-          color: #4ade80;
-          border: 1px solid rgba(34, 197, 94, 0.65);
-        }
-
-        .stat-badge.down {
-          background: rgba(220, 38, 38, 0.12);
-          color: #fca5a5;
-          border-color: rgba(248, 113, 113, 0.7);
-        }
-
-        .stat-sub {
-          font-size: 11px;
-          color: var(--text-muted);
-        }
-
-        .stat-icon-large {
-          position: absolute;
-          bottom: -6px;
-          right: 8px;
-          font-size: 32px;
-          opacity: 0.22;
-        }
-
-        .grid-2 {
-          display: grid;
-          grid-template-columns: 2fr 1.2fr;
-          gap: 14px;
-        }
-
-        .card {
-          background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
-          border-radius: 20px;
-          padding: 14px;
-          border: 1px solid rgba(148, 163, 184, 0.38);
-          box-shadow: var(--shadow-soft);
-        }
-
-        .card-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 8px;
-          gap: 8px;
-        }
-
-        .card-title {
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .card-subtitle {
-          font-size: 11px;
-          color: var(--text-muted);
-        }
-
-        .tag-pill {
-          font-size: 11px;
-          padding: 3px 8px;
-          border-radius: var(--radius-pill);
-          background: rgba(37, 99, 235, 0.2);
-          color: #bfdbfe;
-          border: 1px solid rgba(59, 130, 246, 0.7);
-        }
-
-        /* TABLE */
-        .table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 6px;
-          font-size: 12px;
-        }
-
-        .table thead {
-          background: rgba(15, 23, 42, 0.95);
-        }
-
-        .table th,
-        .table td {
-          padding: 8px 6px;
-          text-align: left;
-          border-bottom: 1px solid rgba(30, 64, 175, 0.55);
-        }
-
-        .table th {
-          font-weight: 500;
-          color: #9ca3af;
-          font-size: 11px;
-        }
-
-        .table tr:last-child td {
-          border-bottom: none;
-        }
-
-        .badge-soft {
-          font-size: 11px;
-          padding: 3px 7px;
-          border-radius: var(--radius-pill);
-          background: rgba(56, 189, 248, 0.16);
-          color: #7dd3fc;
-          border: 1px solid rgba(56, 189, 248, 0.6);
-        }
-
-        .badge-soft.red {
-          background: rgba(248, 113, 113, 0.18);
-          color: #fecaca;
-          border-color: rgba(248, 113, 113, 0.9);
-        }
-
-        .badge-soft.green {
-          background: rgba(34, 197, 94, 0.16);
-          color: #bbf7d0;
-          border-color: rgba(34, 197, 94, 0.85);
-        }
-
-        /* TASK LIST */
-        .task-list {
-          list-style: none;
-          margin-top: 8px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .task-item {
-          padding: 7px 8px;
-          border-radius: 14px;
-          border: 1px solid rgba(148, 163, 184, 0.4);
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 8px;
-          background: radial-gradient(circle at left, rgba(30, 64, 175, 0.32), rgba(15, 23, 42, 1));
-        }
-
-        .task-main {
-          display: flex;
-          flex-direction: column;
-          gap: 1px;
-        }
-
-        .task-title {
-          font-size: 12px;
-          font-weight: 500;
-        }
-
-        .task-meta {
-          font-size: 11px;
-          color: var(--text-muted);
-        }
-
-        .task-tag {
-          font-size: 11px;
-          padding: 3px 7px;
-          border-radius: var(--radius-pill);
-          background: rgba(56, 189, 248, 0.2);
-          color: #bae6fd;
-          border: 1px solid rgba(56, 189, 248, 0.7);
-          white-space: nowrap;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 992px) {
-          .dashboard-layout {
-            flex-direction: column;
-          }
-
-          .sidebar {
-            flex-direction: row;
-            align-items: center;
-            padding: 14px 12px;
-            gap: 12px;
-            width: 100%;
-          }
-
-          .sidebar-main {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-          }
-
-          .nav-list {
-            flex-direction: row;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding-bottom: 2px;
-          }
-
-          .nav-item {
-            min-width: 120px;
-            white-space: nowrap;
-          }
-
-          .sidebar-footer {
-            margin-top: 0;
-            border-top: none;
-            border-left: 1px dashed rgba(148, 163, 184, 0.35);
-            padding-left: 10px;
-          }
-
-          .stats-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-
-          .grid-2 {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 600px) {
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .topbar {
-            padding: 12px 12px;
-          }
-
-          .card {
-            padding: 12px;
-          }
-        }
-      `}</style>
-
-            <div className="dashboard-layout">
-                {/* SIDEBAR */}
-                <aside className="sidebar">
-                    <div className="sidebar-main">
-                        <div className="sidebar-header">
-                            <div className="logo-circle">S</div>
-                            <div className="brand-text">
-                                <span className="brand-title">Staff Panel</span>
-                                <span className="brand-subtitle">College Management</span>
-                            </div>
-                        </div>
-
+        <div className="page-container dashboard-page">
+            <Nav />
+            <div className="content-wrapper">
+                {/* Hero Section */}
+                <div className="dashboard-hero">
+                    <div className="hero-welcome">
                         <div>
-                            <div className="sidebar-section-title">Navigation</div>
-                            <ul className="nav-list">
-                                <li className="nav-item active">
-                                    <span className="icon">🏠</span>
-                                    <div className="nav-text">
-                                        <span className="nav-label-main">Dashboard</span>
-                                        <span className="nav-label-sub">Overview</span>
-                                    </div>
-                                </li>
-                                <li className="nav-item">
-                                    <span className="icon">📅</span>
-                                    <div className="nav-text">
-                                        <span className="nav-label-main">Timetable</span>
-                                        <span className="nav-label-sub">Slots & periods</span>
-                                    </div>
-                                </li>
-                                <li className="nav-item">
-                                    <span className="icon">🧑‍🎓</span>
-                                    <div className="nav-text">
-                                        <span className="nav-label-main">Students</span>
-                                        <span className="nav-label-sub">Attendance & marks</span>
-                                    </div>
-                                </li>
-                                <li className="nav-item">
-                                    <span className="icon">📝</span>
-                                    <div className="nav-text">
-                                        <span className="nav-label-main">Reports</span>
-                                        <span className="nav-label-sub">Daily updates</span>
-                                    </div>
-                                </li>
-                            </ul>
+                            <span className="badge">Staff Portal</span>
+                        </div>
+                        <div>
+                            <h1 style={{ color: 'skyblue' }}>Hello, {staff.name}! 👋</h1>
+                            <p style={{ color: 'skyblue' }}>
+                                {staff.designation} • {staff.department}
+                            </p>
                         </div>
                     </div>
-
-                    <div className="sidebar-footer">
-                        <div className="user-mini">
-                            <div className="user-avatar">RK</div>
-                            <div className="user-info">
-                                <span className="user-name">Rohith Khan</span>
-                                <span className="user-role">Staff · CSE Dept</span>
+                    <div className="hero-stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-icon blue">📚</div>
+                            <div className="stat-info">
+                                <span className="stat-value">{staff.subjects.length}</span>
+                                <span className="stat-label">Handling Subjects</span>
                             </div>
                         </div>
-                        <span className="status-pill">Online</span>
+                        <div className="stat-card">
+                            <div className="stat-icon orange">🎓</div>
+                            <div className="stat-info">
+                                <span className="stat-value">120</span>
+                                <span className="stat-label">Total Students</span>
+                            </div>
+                        </div>
                     </div>
-                </aside>
+                </div>
 
-                {/* MAIN */}
-                <main className="main">
-                    {/* TOP BAR */}
-                    <header className="topbar">
-                        <div className="topbar-left">
-                            <div className="page-title">Good morning, Sir 👋</div>
-                            <div className="page-subtitle">
-                                Here’s a quick snapshot of today’s classes, tasks & reports.
-                            </div>
-                        </div>
-
-                        <div className="topbar-right">
-                            <div className="search-box">
-                                <span className="search-icon">🔍</span>
-                                <input
-                                    type="text"
-                                    placeholder="Search students, classes, reports..."
-                                />
-                            </div>
-                            <button className="icon-btn" title="Notifications">
-                                🔔
-                            </button>
-                            <button className="primary-btn">
-                                <span className="icon">＋</span>
-                                <span>New Report</span>
-                            </button>
-                        </div>
-                    </header>
-
-                    {/* CONTENT */}
-                    <section className="content">
-                        {/* STATS */}
-                        <div className="stats-grid">
-                            <div className="stat-card">
-                                <div className="stat-title">Today’s Classes</div>
-                                <div className="stat-value-row">
-                                    <div className="stat-value">4</div>
-                                    <div className="stat-badge">+1 extra lab</div>
+                <div className="dashboard-layout">
+                    {/* Main Content */}
+                    <div className="main-content">
+                        {/* Quick Actions */}
+                        <section className="section">
+                            <h2 className="section-title">Quick Actions</h2>
+                            <div className="quick-links-grid">
+                                <div
+                                    className={`action-card ${zoomingPath === '/students' ? 'zooming' : ''}`}
+                                    onClick={() => handleQuickAction('/students')} // Assuming this route exists or will exist
+                                >
+                                    <span className="action-icon">👨‍🎓</span>
+                                    <span className="action-text">Out Pass</span>
                                 </div>
-                                <div className="stat-sub">CSE – III & IV year</div>
-                                <div className="stat-icon-large">📚</div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-title">Pending Attendance</div>
-                                <div className="stat-value-row">
-                                    <div className="stat-value">2</div>
-                                    <div className="stat-badge down">Complete before 5 PM</div>
+                                <div
+                                    className={`action-card ${zoomingPath === '/my-classes' ? 'zooming' : ''}`}
+                                    onClick={() => toast.info('Manage Classes feature coming soon!')}
+                                >
+                                    <span className="action-icon">🏫</span>
+                                    <span className="action-text">My Classes</span>
                                 </div>
-                                <div className="stat-sub">Forenoon lab sessions</div>
-                                <div className="stat-icon-large">✅</div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-title">Reports Filed</div>
-                                <div className="stat-value-row">
-                                    <div className="stat-value">12</div>
-                                    <div className="stat-badge">This week</div>
+                                <div
+                                    className={`action-card ${zoomingPath === '/profile' ? 'zooming' : ''}`}
+                                    onClick={() => handleQuickAction(`/staffs/${staff.id}`)}
+                                >
+                                    <span className="action-icon">👤</span>
+                                    <span className="action-text">My Profile</span>
                                 </div>
-                                <div className="stat-sub">Class & lab performance</div>
-                                <div className="stat-icon-large">📝</div>
-                            </div>
-
-                            <div className="stat-card">
-                                <div className="stat-title">Students Flagged</div>
-                                <div className="stat-value-row">
-                                    <div className="stat-value">3</div>
-                                    <div className="stat-badge down">Needs follow-up</div>
+                                <div className="action-card disabled">
+                                    <span className="action-icon">📅</span>
+                                    <span className="action-text">My Timetable</span>
                                 </div>
-                                <div className="stat-sub">Attendance / performance</div>
-                                <div className="stat-icon-large">⚠</div>
                             </div>
-                        </div>
+                        </section>
 
-                        {/* GRID */}
-                        <div className="grid-2">
-                            {/* LEFT: TABLE */}
-                            <div className="card">
+                        {/* Department Info */}
+                        <section className="section">
+                            <div className="card info-card">
                                 <div className="card-header">
+                                    <div className="header-icon">🏛️</div>
                                     <div>
-                                        <div className="card-title">Today’s Schedule</div>
-                                        <div className="card-subtitle">
-                                            Your classes & sessions at a glance
+                                        <h3>Department of Information Technology</h3>
+                                        <p className="card-subtitle">Academic Overview</p>
+                                    </div>
+                                    <span className="badge">IT Dept</span>
+                                </div>
+                                <div className="info-grid">
+                                    <div className="info-item">
+                                        <div className="info-icon">👨‍🏫</div>
+                                        <div className="info-content">
+                                            <label>Head of Department</label>
+                                            <p>Dr. Selvam</p>
                                         </div>
                                     </div>
-                                    <span className="tag-pill">Tuesday · 09 Dec</span>
-                                </div>
-
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Slot</th>
-                                            <th>Class</th>
-                                            <th>Subject</th>
-                                            <th>Room</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>09:00 – 10:00</td>
-                                            <td>III CSE A</td>
-                                            <td>DBMS</td>
-                                            <td>Lab - 02</td>
-                                            <td>
-                                                <span className="badge-soft green">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>10:10 – 11:10</td>
-                                            <td>III CSE B</td>
-                                            <td>DBMS</td>
-                                            <td>Block - 3 / 204</td>
-                                            <td>
-                                                <span className="badge-soft">Upcoming</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>11:20 – 01:00</td>
-                                            <td>IV CSE A</td>
-                                            <td>Project Review</td>
-                                            <td>Lab - 01</td>
-                                            <td>
-                                                <span className="badge-soft">In 30 mins</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>02:00 – 03:30</td>
-                                            <td>III CSE A/B</td>
-                                            <td>Lab – DBMS</td>
-                                            <td>Lab - 03</td>
-                                            <td>
-                                                <span className="badge-soft red">Attendance pending</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* RIGHT: TASKS */}
-                            <div className="card">
-                                <div className="card-header">
-                                    <div>
-                                        <div className="card-title">Quick Tasks</div>
-                                        <div className="card-subtitle">
-                                            Things to close before end of day
+                                    <div className="info-item">
+                                        <div className="info-icon">📋</div>
+                                        <div className="info-content">
+                                            <label>Total Staff</label>
+                                            <p>{STAFF_DATA.length}</p>
                                         </div>
                                     </div>
-                                    <span className="tag-pill">3 pending</span>
+                                    <div className="info-item">
+                                        <div className="info-icon">🎓</div>
+                                        <div className="info-content">
+                                            <label>Total Students</label>
+                                            <p>120</p>
+                                        </div>
+                                    </div>
+                                    <div className="info-item">
+                                        <div className="info-icon">📅</div>
+                                        <div className="info-content">
+                                            <label>Academic Year</label>
+                                            <p>2023-2024</p>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <ul className="task-list">
-                                    <li className="task-item">
-                                        <div className="task-main">
-                                            <span className="task-title">
-                                                Update attendance – DBMS lab
-                                            </span>
-                                            <span className="task-meta">
-                                                III CSE A/B · 02:00 – 03:30 PM
-                                            </span>
-                                        </div>
-                                        <span className="task-tag">High priority</span>
-                                    </li>
-                                    <li className="task-item">
-                                        <div className="task-main">
-                                            <span className="task-title">Upload unit test marks</span>
-                                            <span className="task-meta">IV CSE – Unit Test 2</span>
-                                        </div>
-                                        <span className="task-tag">Marks entry</span>
-                                    </li>
-                                    <li className="task-item">
-                                        <div className="task-main">
-                                            <span className="task-title">Submit daily report</span>
-                                            <span className="task-meta">
-                                                Send summary to HOD by 06:00 PM
-                                            </span>
-                                        </div>
-                                        <span className="task-tag">Reports</span>
-                                    </li>
-                                </ul>
                             </div>
+                        </section>
+
+                        {/* Vision & Mission */}
+                        <section className="section">
+                            <div className="card vision-card">
+                                <div className="card-header">
+                                    <div className="header-icon">🚀</div>
+                                    <h3 className="text-white">Vision & Mission</h3>
+                                </div>
+                                <div className="vision-content">
+                                    <div className="vision-block">
+                                        <h4>Vision</h4>
+                                        <p>Jeppiaar Institute of Technology aspires to provide technical education in futuristic technologies with the perspective of innovative, industrial, and social applications for the betterment of humanity.</p>
+                                    </div>
+                                    <div className="vision-divider"></div>
+                                    <div className="vision-block">
+                                        <h4>Mission</h4>
+                                        <ul>
+                                            <li style={{ color: '#d0c9c9ff' }}>To produce competent and disciplined high-quality professionals.</li>
+                                            <li style={{ color: '#d0c9c9ff' }}>To improve the quality of education through excellence in teaching.</li>
+                                            <li style={{ color: '#d0c9c9ff' }}>To provide excellent infrastructure and stimulating environment.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Sidebar */}
+                    <aside className="sidebar">
+                        {/* Recent Downloads/Uploads */}
+                        <div className="card sidebar-card">
+                            <h3>Recent Uploads</h3>
+                            <div className="downloads-list">
+                                {RECENT_DOWNLOADS.slice(0, 3).map(download => (
+                                    <div key={download.id} className="download-item">
+                                        <div className="download-icon">📄</div>
+                                        <div className="download-info">
+                                            <p className="download-title">{download.title}</p>
+                                            <span className="download-meta">{download.subject} • {download.date}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <button className="btn btn-ghost btn-sm w-full mt-4">View All Uploads</button>
                         </div>
-                    </section>
-                </main>
+                    </aside>
+                </div>
             </div>
-        </>
+
+            <style>{`
+                .dashboard-hero {
+                    background: linear-gradient(-45deg, #0047AB, #00214D, #1e3a8a, #0f172a);
+                    background-size: 400% 400%;
+                    animation: aurora 15s ease infinite;
+                    border-radius: 24px;
+                    padding: 40px;
+                    margin-bottom: 32px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+                    position: relative;
+                    overflow: hidden;
+                    color: white;
+                }
+
+                .dashboard-hero::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background: 
+                        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+                    animation: pulse-glow 8s ease-in-out infinite alternate;
+                    z-index: 0;
+                }
+
+                /* 3D Stat Card Effect */
+                .hero-stats-grid {
+                    display: flex;
+                    gap: 24px;
+                    position: relative;
+                    z-index: 1;
+                    perspective: 1000px;
+                }
+
+                .stat-card {
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(12px);
+                    padding: 20px 28px;
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                    min-width: 180px;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    transform-style: preserve-3d;
+                }
+
+                .stat-card:hover {
+                    transform: translateY(-5px) rotateX(5deg) scale(1.05);
+                    background: rgba(255, 255, 255, 0.2);
+                    box-shadow: 
+                        0 20px 40px rgba(0,0,0,0.3),
+                        0 0 20px rgba(255,255,255,0.2) inset;
+                    border-color: rgba(255,255,255,0.6);
+                }
+
+                /* Section Spacing */
+                .section {
+                    margin-bottom: 32px;
+                }
+
+                .section-title {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                /* Quick Actions Grid with 3D Perspective */
+                .quick-links-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    gap: 20px;
+                    perspective: 1000px;
+                    padding-bottom: 20px;
+                }
+
+                .action-card {
+                    background: white;
+                    padding: 24px;
+                    border-radius: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 16px;
+                    text-align: center;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+                    position: relative;
+                    overflow: hidden;
+                    z-index: 1;
+                    cursor: pointer;
+                }
+
+                /* Zoom Effect */
+                .action-card.zooming {
+                    animation: zoom-in-nav 0.6s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+                    z-index: 100;
+                    pointer-events: none;
+                }
+
+                @keyframes zoom-in-nav {
+                    0% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                    50% {
+                        opacity: 0.8;
+                    }
+                    100% {
+                        transform: scale(20);
+                        opacity: 0;
+                    }
+                }
+
+                .action-card:hover {
+                    transform: translateY(-8px) scale(1.02);
+                    box-shadow: 0 20px 50px rgba(255, 255, 255, 0.17);
+                }
+                
+                .action-icon {
+                    font-size: 36px;
+                    background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+                    width: 72px;
+                    height: 72px;
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    color: var(--primary);
+                    border: 1px solid rgba(0, 0, 0, 0.03);
+                    position: relative;
+                    z-index: 2;
+                }
+
+                .action-card:hover .action-icon {
+                    background: #8eb7f0ff;
+                    color: white;
+                    transform: scale(1.15) rotate(10deg);
+                    box-shadow: 0 15px 30px rgba(0, 70, 168, 0.78);
+                }
+
+                /* Enhanced Info Card */
+                .info-card {
+                    background: white;
+                    border-radius: 24px;
+                    padding: 32px;
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .info-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 6px;
+                    background: linear-gradient(90deg, #0047AB, #60a5fa);
+                }
+                
+                .card-header {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                    margin-bottom: 32px;
+                    border-bottom: 1px solid #f1e4e4ff;
+                    padding-bottom: 24px;
+                }
+
+                .header-icon {
+                    font-size: 28px;
+                    background: #eff6ff;
+                    padding: 12px;
+                    border-radius: 12px;
+                }
+
+                .card-subtitle {
+                    color: #64748b;
+                    font-size: 0.9rem;
+                    margin-top: 4px;
+                }
+
+                .info-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 24px;
+                }
+
+                .info-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                    padding: 16px;
+                    background: #f8fafc;
+                    border-radius: 16px;
+                    transition: all 0.3s ease;
+                }
+
+                .info-item:hover {
+                    background: #eff6ff;
+                    transform: translateY(-2px);
+                }
+
+                .info-icon {
+                    font-size: 24px;
+                    background: white;
+                    padding: 10px;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+                }
+
+                .info-content label {
+                    display: block;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 4px;
+                }
+
+                .info-content p {
+                    color: #0f172a;
+                    font-weight: 600;
+                    font-size: 1rem;
+                    margin: 0;
+                }
+
+                /* Vision Card Enhancements */
+                .vision-card {
+                    background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+                    color: white;
+                    border-radius: 24px;
+                    padding: 32px;
+                    position: relative;
+                    overflow: hidden;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+                }
+
+                /* Shimmer Glow Border */
+                .vision-card::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 24px; 
+                    padding: 2px; 
+                    background: linear-gradient(45deg, transparent, rgba(96, 165, 250, 0.8), rgba(251, 191, 36, 0.8), transparent); 
+                    background-size: 200% 200%; 
+                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+                    animation: shimmer-border 3s linear infinite;
+                    pointer-events: none;
+                }
+
+                /* Background Blur/Glow behind */
+                .vision-card::after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.1), transparent 60%);
+                    animation: rotate-glow 10s linear infinite;
+                    pointer-events: none;
+                    z-index: 0;
+                }
+
+                .vision-card .card-header {
+                    border-bottom-color: rgba(255,255,255,0.1);
+                    align-items: center;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .vision-card .header-icon {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+
+                .vision-card h3 {
+                    color: white;
+                }
+
+                .vision-content {
+                    display: grid;
+                    grid-template-columns: 1fr auto 1fr;
+                    gap: 32px;
+                    align-items: start;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .vision-divider {
+                    width: 1px;
+                    height: 100%;
+                    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2), transparent);
+                }
+
+                .vision-block h4 {
+                    color: #60a5fa; /* Light Blue */
+                    font-size: 1.1rem;
+                    margin-bottom: 16px;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .vision-block p, .vision-block li {
+                    color: #cbd5e1; /* Slate 300 - readable on dark */
+                    line-height: 1.6;
+                    font-size: 0.95rem;
+                }
+
+                .vision-block ul {
+                    padding-left: 20px;
+                }
+
+                .vision-block li {
+                    margin-bottom: 8px;
+                }
+
+                @media (max-width: 768px) {
+                    .info-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .vision-content {
+                        grid-template-columns: 1fr;
+                    }
+                    .vision-divider {
+                        display: none;
+                    }
+                }
+                
+                @keyframes shimmer-border {
+                    0% { background-position: 0% 50%; }
+                    100% { background-position: 200% 50%; }
+                }
+
+                @keyframes rotate-glow {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+
+
+                /* Keyframes */
+                @keyframes aurora {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+
+                @keyframes float {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-10px); }
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes fadeInRight {
+                    from { opacity: 0; transform: translateX(-20px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+
+                @keyframes slideInRight {
+                    from { opacity: 0; transform: translateX(30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                
+                @keyframes pulse-glow {
+                    0%, 100% { opacity: 0.5; transform: scale(1); }
+                    50% { opacity: 0.8; transform: scale(1.1); }
+                }
+
+                @keyframes typing {
+                    from { width: 0 }
+                    to { width: 100% }
+                }
+                
+                @keyframes blink-caret {
+                    from, to { border-color: transparent }
+                    50% { border-color: white; }
+                }
+
+                .hero-welcome .badge {
+                    animation: pulse-glow 3s infinite;
+                }
+                
+                /* Typing effect for H1 */
+                .hero-welcome h1 {
+                    display: inline-block;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    border-right: 3px solid white;
+                    animation: 
+                        fadeInUp 0.8s ease-out 0.2s backwards,
+                        typing 2s steps(30, end) 0.5s both,
+                        blink-caret 0.75s step-end infinite;
+                    max-width: fit-content;
+                }
+
+                /* Staggered Action Cards */
+                .action-card {
+                    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+                }
+                .action-card:nth-child(1) { animation-delay: 0.3s; }
+                .action-card:nth-child(2) { animation-delay: 0.4s; }
+                .action-card:nth-child(3) { animation-delay: 0.5s; }
+                .action-card:nth-child(4) { animation-delay: 0.6s; }
+
+                @media (max-width: 968px) {
+                    .dashboard-layout { grid-template-columns: 20fr; }
+                    .dashboard-hero { flex-direction: column; align-items: flex-start; gap: 24px; }
+                    .hero-stats-grid { width: 100%; overflow-x: auto; padding-bottom: 12px; }
+                    .sidebar { animation: fadeInUp 0.8s ease-out 0.4s backwards; }
+                }
+
+                /* Recent Downloads Premium Styles */
+                .sidebar-card {
+                    background: white;
+                    border-radius: 24px;
+                    padding: 24px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+                    border: 1px solid rgba(0,0,0,0.05);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    margin-bottom: 24px;
+                }
+
+                .sidebar-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+                }
+
+                .sidebar-card h3 {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .downloads-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .download-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 12px;
+                    border-radius: 16px;
+                    background: #f8fafc;
+                    border: 1px solid transparent;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                    animation: slideInRight 0.5s ease backwards;
+                }
+
+                .download-item:nth-child(1) { animation-delay: 0.1s; }
+                .download-item:nth-child(2) { animation-delay: 0.2s; }
+                .download-item:nth-child(3) { animation-delay: 0.3s; }
+                .download-item:nth-child(4) { animation-delay: 0.4s; }
+                .download-item:nth-child(5) { animation-delay: 0.5s; }
+
+                .download-item:hover {
+                    background: #eff6ff;
+                    border-color: rgba(59, 130, 246, 0.3);
+                    transform: translateX(5px) scale(1.02);
+                    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
+                }
+
+                .download-icon {
+                    width: 42px;
+                    height: 42px;
+                    background: white;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease, color 0.3s ease;
+                    color: #64748b;
+                }
+
+                .download-item:hover .download-icon {
+                    transform: scale(1.15) rotate(-8deg);
+                    background: #3b82f6;
+                    color: white;
+                }
+
+                .download-info {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .download-title {
+                    font-weight: 600;
+                    color: #334155;
+                    font-size: 0.9rem;
+                    margin-bottom: 2px;
+                    transition: color 0.2s ease;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .download-item:hover .download-title {
+                    color: #1d4ed8;
+                    width: 200px; /* Force width to trigger ellipsis if needed, though better handled by flex */
+                }
+
+                .download-meta {
+                    font-size: 0.75rem;
+                    color: #94a3b8;
+                    display: block;
+                }
+            `}</style>
+        </div>
     );
 };
 

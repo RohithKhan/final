@@ -197,6 +197,26 @@ export const STAFF_DATA: Staff[] = [
         ],
         image: "/assets/images/manikandan.jpg",
     },
+    {
+        id: 8,
+        name: "Mrs. Arthi",
+        designation: "Assistant Professor",
+        department: "Information Technology",
+        qualification: "M.E. (IT)",
+        experience: 5,
+        subjects: ["Artificial Intelligence", "Machine Learning"],
+        contactNumber: "+91 98765 43216",
+        email: "arthi@jit.ac.in",
+        skills: ["Machine Learning", "Deep Learning", "Neural Networks", "TensorFlow", "PyTorch", "Computer Vision", "NLP"],
+        achievements: [
+            "Published 15 papers on AI/ML applications",
+            "Received research grant for AI project worth ₹10 lakhs",
+            "Developed AI-based attendance system for college",
+            "Certified TensorFlow Developer",
+            "Mentored students to win 2 national level AI competitions"
+        ],
+        image: "/assets/images/arthi.jpg",
+    }
 ];
 
 export const SUBJECTS_DATA: Subject[] = [
