@@ -72,7 +72,7 @@ const StaffDashboard: React.FC = () => {
                             <div className="quick-links-grid">
                                 <div
                                     className={`action-card ${zoomingPath === '/students' ? 'zooming' : ''}`}
-                                    onClick={() => handleQuickAction('/students')} // Assuming this route exists or will exist
+                                    onClick={() => handleQuickAction('/passApproval')} // Assuming this route exists or will exist
                                 >
                                     <span className="action-icon">👨‍🎓</span>
                                     <span className="action-text">Out Pass</span>

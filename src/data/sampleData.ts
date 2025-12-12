@@ -212,8 +212,7 @@ export const STAFF_DATA: Staff[] = [
             "Published 15 papers on AI/ML applications",
             "Received research grant for AI project worth ₹10 lakhs",
             "Developed AI-based attendance system for college",
-            "Certified TensorFlow Developer",
-            "Mentored students to win 2 national level AI competitions"
+            "Certified good teacher",
         ],
         image: "/assets/images/arthi.jpg",
     }

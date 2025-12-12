@@ -14,6 +14,7 @@ import Subjects from './pages/Subjects'
 import SubjectDetails from './pages/SubjectDetails'
 import Profile from './pages/Profile'
 import Outpass from './pages/Outpass'
+import PassApproval from './pages/PassApproval'
 
 
 createRoot(document.getElementById('root')!).render(
@@ -63,6 +64,11 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/outpass" element={
           <ProtectedRoute>
             <Outpass />
+          </ProtectedRoute>
+        } />
+        <Route path="/passapproval" element={
+          <ProtectedRoute>
+            <PassApproval />
           </ProtectedRoute>
         } />
 

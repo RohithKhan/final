@@ -23,7 +23,8 @@ const Outpass: React.FC = () => {
         setTimeout(() => {
             setIsSubmitting(false);
             toast.success("Outpass application submitted successfully!");
-            navigate('/dashboard');
+            // Navigate to the approval page to view the submitted request
+            navigate('/passapproval');
         }, 1500);
     };
 
@@ -96,6 +97,7 @@ const Outpass: React.FC = () => {
                                 value={formData.reason}
                                 onChange={handleChange}
                                 required
+                                maxLength={250}
                                 rows={4}
                                 placeholder="Please describe why you need to leave..."
                                 className="form-input"
@@ -119,6 +121,13 @@ const Outpass: React.FC = () => {
                             <button type="submit" className="btn btn-primary submit-btn" disabled={isSubmitting}>
                                 {isSubmitting ? 'Submitting...' : 'Submit Application'}
                             </button>
+                            {/* <button
+                                type="button"
+                                onClick={() => navigate('')}
+                                className="btn btn-secondary view-status-btn"
+                            >
+                                View Approval Status
+                            </button>  */}
                         </div>
                     </form>
                 </div>
@@ -223,8 +232,14 @@ const Outpass: React.FC = () => {
                     resize: vertical;
                 }
 
+                .form-actions {
+                    display: flex;
+                    gap: 16px;
+                    margin-top: 32px;
+                }
+
                 .submit-btn {
-                    width: 100%;
+                    flex: 1;
                     padding: 16px;
                     font-size: 1.1rem;
                     border-radius: 12px;
@@ -247,12 +262,33 @@ const Outpass: React.FC = () => {
                     cursor: not-allowed;
                 }
 
+                .view-status-btn {
+                    flex: 1;
+                    padding: 16px;
+                    font-size: 1.1rem;
+                    border-radius: 12px;
+                    background: white;
+                    color: #2563eb;
+                    border: 2px solid #2563eb;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .view-status-btn:hover {
+                    background: #eff6ff;
+                    transform: translateY(-2px);
+                }
+
                 @media (max-width: 640px) {
                     .form-row {
                         grid-template-columns: 1fr;
                     }
                     .outpass-form-container {
                         padding: 24px;
+                    }
+                    .form-actions {
+                        flex-direction: column;
                     }
                 }
 
