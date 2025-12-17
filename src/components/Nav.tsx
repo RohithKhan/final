@@ -58,27 +58,31 @@ const Nav: React.FC = () => {
                             >
                                 Dashboard
                             </Link>
-                            <Link
-                                to="/staffs"
-                                className={`nav-link ${isActive('/staffs') ? 'active' : ''}`}
-                                onClick={closeMenu}
-                            >
-                                Staffs
-                            </Link>
-                            <Link
-                                to="/subjects"
-                                className={`nav-link ${isActive('/subjects') ? 'active' : ''}`}
-                                onClick={closeMenu}
-                            >
-                                Subjects
-                            </Link>
-                            <Link
-                                to="/profile"
-                                className={`nav-link ${isActive('/profile') ? 'active' : ''}`}
-                                onClick={closeMenu}
-                            >
-                                Profile
-                            </Link>
+                            {location.pathname !== '/staff-dashboard' && (
+                                <>
+                                    <Link
+                                        to="/staffs"
+                                        className={`nav-link ${isActive('/staffs') ? 'active' : ''}`}
+                                        onClick={closeMenu}
+                                    >
+                                        Staffs
+                                    </Link>
+                                    <Link
+                                        to="/subjects"
+                                        className={`nav-link ${isActive('/subjects') ? 'active' : ''}`}
+                                        onClick={closeMenu}
+                                    >
+                                        Subjects
+                                    </Link>
+                                    <Link
+                                        to="/profile"
+                                        className={`nav-link ${isActive('/profile') ? 'active' : ''}`}
+                                        onClick={closeMenu}
+                                    >
+                                        Profile
+                                    </Link>
+                                </>
+                            )}
                             <button onClick={handleLogout} className="btn btn-primary btn-sm logout-btn">
                                 Logout
                             </button>
